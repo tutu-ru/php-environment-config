@@ -11,6 +11,9 @@ use TutuRu\Etcd\Exceptions\EtcdException;
 
 class EtcdProviderTest extends BaseTest
 {
+    private const CHEKED_CACHE_NS = 'tutu_env_config_etc_';
+
+
     private function createBaseFixture()
     {
         $client = $this->createEtcdClient();
@@ -52,7 +55,7 @@ class EtcdProviderTest extends BaseTest
             ->method('getDirectoryNodesAsArray');
 
         $cache = new SimpleCacheBridge(new ArrayCachePool());
-        $cache->set(EtcdConfigProvider::CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeOne' => 'test']);
+        $cache->set(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeOne' => 'test']);
 
         new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
     }
@@ -70,7 +73,7 @@ class EtcdProviderTest extends BaseTest
         $cache = new SimpleCacheBridge(new ArrayCachePool());
 
         new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
-        $this->assertArrayHasKey('nodeOne', $cache->get(EtcdConfigProvider::CACHE_NS . self::TEST_ETCD_ROOT_DIR));
+        $this->assertArrayHasKey('nodeOne', $cache->get(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR));
     }
 
 
@@ -123,7 +126,7 @@ class EtcdProviderTest extends BaseTest
         $this->createBaseFixture();
 
         $cache = new SimpleCacheBridge(new ArrayCachePool());
-        $cache->set(EtcdConfigProvider::CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeTwo' => 'Three']);
+        $cache->set(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeTwo' => 'Three']);
 
         $provider = new EtcdConfigProvider(new EtcdClientMockFactory($this), self::TEST_ETCD_ROOT_DIR, $cache);
         $this->assertEquals('Three', $provider->getValue('nodeTwo'));
@@ -163,7 +166,7 @@ class EtcdProviderTest extends BaseTest
         $provider = new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
         $provider->setValue('nodeTwo', 'Three');
         // FIXME !!!
-        $this->assertEquals(['Two', 'Three'], $cache->get(EtcdConfigProvider::CACHE_NS . self::TEST_ETCD_ROOT_DIR)['nodeTwo']);
+        $this->assertEquals(['Two', 'Three'], $cache->get(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR)['nodeTwo']);
     }
 
 

@@ -5,6 +5,7 @@ namespace TutuRu\EnvironmentConfig;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
+use TutuRu\Config\ConfigInterface;
 use TutuRu\EnvironmentConfig\Exceptions\EtcdConfigLoadingException;
 use TutuRu\Etcd\EtcdClient;
 use TutuRu\Etcd\EtcdClientFactory;
@@ -12,7 +13,7 @@ use TutuRu\Etcd\Exceptions\EtcdException;
 
 class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
 {
-    public const CACHE_NS = 'tutu_env_config_etc_';
+    private const CACHE_NS = 'tutu_env_config_etc_';
 
     /** @var array */
     private $data;
@@ -49,7 +50,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
     public function getValue(string $configId)
     {
         $data = $this->data;
-        $path = explode(self::CONFIG_SEPARATOR, $configId);
+        $path = explode(ConfigInterface::CONFIG_NODES_SEPARATOR, $configId);
         return $this->getValueStep($data, $path);
     }
 
@@ -62,7 +63,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
      */
     public function setValue(string $configId, $value)
     {
-        $parts = explode(self::CONFIG_SEPARATOR, $configId);
+        $parts = explode(ConfigInterface::CONFIG_NODES_SEPARATOR, $configId);
         $this->client->setValue(implode(EtcdClient::PATH_SEPARATOR, $parts), $value);
 
         // данный код в тестах не проверяется, не придумал по быстрому как это сделать

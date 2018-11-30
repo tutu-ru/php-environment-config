@@ -8,8 +8,6 @@ use TutuRu\Etcd\EtcdClientFactory;
 
 class EtcdConfig
 {
-    public const CONFIG_SEPARATOR = '.';
-
     /** @var EtcdClient */
     protected $client;
 

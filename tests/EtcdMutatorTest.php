@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace TutuRu\Tests\EnvironmentConfig;
 
-use TutuRu\Config\Exceptions\ConfigNodeNotExist;
+use TutuRu\Config\Exceptions\ConfigPathNotExistExceptionInterface;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 use TutuRu\Etcd\Exceptions\NotAFileException;
 
@@ -103,7 +103,7 @@ abstract class EtcdMutatorTest extends BaseTest
 
     public function testGetValueNotExist()
     {
-        $this->expectException(ConfigNodeNotExist::class);
+        $this->expectException(ConfigPathNotExistExceptionInterface::class);
         $this->getMutator()->getValue('name');
     }
 

@@ -6,7 +6,7 @@ namespace TutuRu\EnvironmentConfig;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use TutuRu\Config\ConfigInterface;
-use TutuRu\EnvironmentConfig\Exceptions\EtcdConfigLoadingException;
+use TutuRu\EnvironmentConfig\Exceptions\EnvConfigLoadingException;
 use TutuRu\Etcd\EtcdClient;
 use TutuRu\Etcd\EtcdClientFactory;
 use TutuRu\Etcd\Exceptions\EtcdException;
@@ -32,7 +32,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
      * @param int|null            $cacheTtlSec
      *
      * @throws \TutuRu\Etcd\Exceptions\NoEnvVarsException
-     * @throws EtcdConfigLoadingException
+     * @throws EnvConfigLoadingException
      */
     public function __construct(
         EtcdClientFactory $clientFactory,
@@ -50,7 +50,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
     public function getValue(string $configId)
     {
         $data = $this->data;
-        $path = explode(ConfigInterface::CONFIG_NODES_SEPARATOR, $configId);
+        $path = explode(ConfigInterface::CONFIG_PATH_SEPARATOR, $configId);
         return $this->getValueStep($data, $path);
     }
 
@@ -63,7 +63,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
      */
     public function setValue(string $configId, $value)
     {
-        $parts = explode(ConfigInterface::CONFIG_NODES_SEPARATOR, $configId);
+        $parts = explode(ConfigInterface::CONFIG_PATH_SEPARATOR, $configId);
         $this->client->setValue(implode(EtcdClient::PATH_SEPARATOR, $parts), $value);
 
         // данный код в тестах не проверяется, не придумал по быстрому как это сделать
@@ -79,7 +79,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
 
 
     /**
-     * @throws EtcdConfigLoadingException
+     * @throws EnvConfigLoadingException
      */
     private function loadData()
     {
@@ -92,7 +92,7 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
                 $this->saveDataInCache($this->data);
             }
         } catch (EtcdException $e) {
-            throw new EtcdConfigLoadingException("Can't read etcd dir: {$this->rootNode}", $e->getCode(), $e);
+            throw new EnvConfigLoadingException("Can't read etcd dir: {$this->rootNode}", $e->getCode(), $e);
         }
     }
 

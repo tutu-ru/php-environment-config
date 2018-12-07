@@ -6,7 +6,7 @@ namespace TutuRu\Tests\EnvironmentConfig;
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use Cache\Bridge\SimpleCache\SimpleCacheBridge;
 use TutuRu\EnvironmentConfig\EtcdConfigProvider;
-use TutuRu\EnvironmentConfig\Exceptions\EtcdConfigLoadingException;
+use TutuRu\EnvironmentConfig\Exceptions\EnvConfigLoadingException;
 use TutuRu\Etcd\Exceptions\EtcdException;
 
 class EtcdProviderTest extends BaseTest
@@ -79,7 +79,7 @@ class EtcdProviderTest extends BaseTest
 
     public function testLoadWithNotExistingDir()
     {
-        $this->expectException(EtcdConfigLoadingException::class);
+        $this->expectException(EnvConfigLoadingException::class);
 
         $clientFactory = new EtcdClientMockFactory($this);
         new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR);
@@ -109,7 +109,7 @@ class EtcdProviderTest extends BaseTest
      * @param $node
      * @param $expectedResult
      *
-     * @throws EtcdConfigLoadingException
+     * @throws EnvConfigLoadingException
      * @throws \TutuRu\Etcd\Exceptions\NoEnvVarsException
      */
     public function testGetValue($node, $expectedResult)

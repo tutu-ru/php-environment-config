@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace TutuRu\EnvironmentConfig;
 
 use TutuRu\Config\EnvironmentConfigInterface;
-use TutuRu\Config\Exceptions\BusinessConfigUpdateException;
 use TutuRu\Config\MutatorInterface;
+use TutuRu\EnvironmentConfig\Exceptions\EnvConfigUpdateForbiddenException;
 
 class EnvironmentConfig implements EnvironmentConfigInterface
 {
@@ -64,17 +64,10 @@ class EnvironmentConfig implements EnvironmentConfigInterface
     }
 
 
-    /**
-     * @param string $configId
-     * @param mixed  $value
-     *
-     * @throws BusinessConfigUpdateException
-     * @return void
-     */
     public function updateBusinessValue(string $configId, $value)
     {
         if (is_null($this->businessProvider->getValue($configId))) {
-            throw new BusinessConfigUpdateException("Update for not existing node ({$configId}) is forbidden");
+            throw new EnvConfigUpdateForbiddenException("Update for not existing node ({$configId}) is forbidden");
         }
         $this->businessProvider->setValue($configId, $value);
     }

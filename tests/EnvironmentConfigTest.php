@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace TutuRu\Tests\EnvironmentConfig;
 
-use TutuRu\Config\Exceptions\BusinessConfigUpdateException;
+use TutuRu\Config\Exceptions\ConfigUpdateForbiddenExceptionInterface;
 use TutuRu\EnvironmentConfig\EnvironmentConfig;
-use TutuRu\EnvironmentConfig\Exceptions\EtcdConfigLoadingException;
+use TutuRu\EnvironmentConfig\Exceptions\EnvConfigLoadingException;
 
 class EnvironmentConfigTest extends BaseTest
 {
     public function testLoadWithNotExistingDirs()
     {
-        $this->expectException(EtcdConfigLoadingException::class);
+        $this->expectException(EnvConfigLoadingException::class);
 
         $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
         $config->load();
@@ -20,7 +20,7 @@ class EnvironmentConfigTest extends BaseTest
 
     public function testLoadWithOneNotExistingPath()
     {
-        $this->expectException(EtcdConfigLoadingException::class);
+        $this->expectException(EnvConfigLoadingException::class);
 
         $client = $this->createEtcdClient();
         $client->makeDir('/' . self::TEST_ETCD_ROOT_DIR . '/test/service');
@@ -225,7 +225,7 @@ class EnvironmentConfigTest extends BaseTest
 
         try {
             $config->load();
-        } catch (EtcdConfigLoadingException $e) {
+        } catch (EnvConfigLoadingException $e) {
             $this->assertStringEndsWith(self::TEST_ETCD_ROOT_DIR . '/infrastructure', $e->getMessage());
         }
 
@@ -269,7 +269,7 @@ class EnvironmentConfigTest extends BaseTest
         $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
-        $this->expectException(BusinessConfigUpdateException::class);
+        $this->expectException(ConfigUpdateForbiddenExceptionInterface::class);
         $config->updateBusinessValue('nodeFour', 'updated');
     }
 }

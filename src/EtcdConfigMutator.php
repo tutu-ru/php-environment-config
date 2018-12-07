@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace TutuRu\EnvironmentConfig;
 
-use TutuRu\Config\Exceptions\ConfigNodeNotExist;
 use TutuRu\Config\MutatorInterface;
+use TutuRu\EnvironmentConfig\Exceptions\EnvConfigNodeNotExistException;
 use TutuRu\Etcd\EtcdClient;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
@@ -17,12 +17,8 @@ class EtcdConfigMutator extends EtcdConfig implements MutatorInterface
         }
     }
 
-    /**
-     * @param string $pathFrom
-     * @param string $pathTo
-     * @throws \TutuRu\Etcd\Exceptions\EtcdException
-     */
-    public function copy($pathFrom, $pathTo)
+
+    public function copy(string $pathFrom, string $pathTo)
     {
         $listResult = $this->client->listDir($pathFrom, false);
         if (isset($listResult['node']['value'])) {
@@ -32,21 +28,14 @@ class EtcdConfigMutator extends EtcdConfig implements MutatorInterface
         }
     }
 
-    /**
-     * @param string $path
-     * @throws \TutuRu\Etcd\Exceptions\EtcdException
-     */
-    public function delete($path)
+
+    public function delete(string $path)
     {
         $this->client->deleteDir($path, true);
     }
 
-    /**
-     * @param string $path
-     * @param mixed  $value
-     * @throws \TutuRu\Etcd\Exceptions\EtcdException
-     */
-    public function setValue($path, $value)
+
+    public function setValue(string $path, $value)
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
@@ -57,19 +46,14 @@ class EtcdConfigMutator extends EtcdConfig implements MutatorInterface
         }
     }
 
-    /**
-     * @param string $path
-     * @return mixed
-     * @throws ConfigNodeNotExist
-     * @throws \TutuRu\Etcd\Exceptions\EtcdException
-     */
-    public function getValue($path)
+
+    public function getValue(string $path)
     {
         $result = null;
         try {
             $result = $this->client->getDirectoryNodesAsArray($path);
         } catch (KeyNotFoundException $e) {
-            throw new ConfigNodeNotExist($path, 0, $e);
+            throw new EnvConfigNodeNotExistException($path, 0, $e);
         }
         if (is_array($result) && 1 === count($result)) {
             if ('' === key($result) || trim($path, EtcdClient::PATH_SEPARATOR) === key($result)) {

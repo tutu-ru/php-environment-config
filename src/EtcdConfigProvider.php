@@ -13,10 +13,9 @@ use TutuRu\Etcd\Exceptions\EtcdException;
 
 class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
 {
-    private const CACHE_NS = 'tutu_env_config_etc_';
+    use ConfigDataStorageTrait;
 
-    /** @var array */
-    private $data;
+    private const CACHE_NS = 'tutu_env_config_etc_';
 
     /** @var CacheInterface */
     private $cacheDriver;
@@ -26,10 +25,10 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
 
 
     /**
-     * @param EtcdClientFactory   $clientFactory
-     * @param string              $rootNode
+     * @param EtcdClientFactory $clientFactory
+     * @param string $rootNode
      * @param CacheInterface|null $cacheDriver
-     * @param int|null            $cacheTtlSec
+     * @param int|null $cacheTtlSec
      *
      * @throws \TutuRu\Etcd\Exceptions\NoEnvVarsException
      * @throws EnvConfigLoadingException
@@ -47,33 +46,25 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
     }
 
 
-    public function getValue(string $configId)
+    public function getValue(string $path)
     {
-        $data = $this->data;
-        $path = explode(ConfigInterface::CONFIG_PATH_SEPARATOR, $configId);
-        return $this->getValueStep($data, $path);
+        return $this->getConfigData($path);
     }
 
 
     /**
-     * @param string $configId
+     * @param string $path
      * @param mixed  $value
      *
      * @throws EtcdException
      */
-    public function setValue(string $configId, $value)
+    public function setValue(string $path, $value)
     {
-        $parts = explode(ConfigInterface::CONFIG_PATH_SEPARATOR, $configId);
-        $this->client->setValue(implode(EtcdClient::PATH_SEPARATOR, $parts), $value);
-
-        // данный код в тестах не проверяется, не придумал по быстрому как это сделать
-        // проверил только логированием в рантайме что все ок
-        $newValue = $value;
-        foreach (array_reverse($parts) as $part) {
-            $newValue = [$part => $newValue];
-        }
-
-        $this->data = array_merge_recursive($this->data, $newValue);
+        $this->client->setValue(
+            str_replace(ConfigInterface::CONFIG_PATH_SEPARATOR, EtcdClient::PATH_SEPARATOR, $path),
+            $value
+        );
+        $this->setConfigData($path, $value);
         $this->saveDataInCache($this->data);
     }
 
@@ -127,28 +118,5 @@ class EtcdConfigProvider extends EtcdConfig implements StorageProviderInterface
     private function getCacheId(): string
     {
         return self::CACHE_NS . str_replace(['{', '}', '(', ')', '/', '\'', '@', ':'], '_', $this->rootNode);
-    }
-
-
-    /**
-     * @param array|string $graph
-     * @param array        $path
-     *
-     * @return array|null
-     */
-    private function getValueStep($graph, array $path)
-    {
-        // полный путь привел к значению
-        if (empty($path)) {
-            return $graph;
-        }
-
-        // шаг рекурсии
-        $currentAddress = array_shift($path);
-        if (!is_array($graph) || !array_key_exists($currentAddress, $graph)) {
-            return null;
-        } else {
-            return $this->getValueStep($graph[$currentAddress], $path);
-        }
     }
 }

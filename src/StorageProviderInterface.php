@@ -5,7 +5,7 @@ namespace TutuRu\EnvironmentConfig;
 
 interface StorageProviderInterface
 {
-    public function getValue(string $configId);
+    public function getValue(string $path);
 
-    public function setValue(string $configId, $value);
+    public function setValue(string $path, $value);
 }

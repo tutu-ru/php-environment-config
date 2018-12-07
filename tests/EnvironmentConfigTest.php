@@ -244,8 +244,7 @@ class EnvironmentConfigTest extends BaseTest
         $config->load();
 
         $config->updateBusinessValue('nodeOne', 'updated');
-        // FIXME
-        $this->assertEquals(['B', 'updated'], $config->getBusinessValue('nodeOne'));
+        $this->assertEquals('updated', $config->getBusinessValue('nodeOne'));
     }
 
 

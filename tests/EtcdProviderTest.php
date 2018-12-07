@@ -11,7 +11,7 @@ use TutuRu\Etcd\Exceptions\EtcdException;
 
 class EtcdProviderTest extends BaseTest
 {
-    private const CHEKED_CACHE_NS = 'tutu_env_config_etc_';
+    private const CHECKED_CACHE_NS = 'tutu_env_config_etc_';
 
 
     private function createBaseFixture()
@@ -55,7 +55,7 @@ class EtcdProviderTest extends BaseTest
             ->method('getDirectoryNodesAsArray');
 
         $cache = new SimpleCacheBridge(new ArrayCachePool());
-        $cache->set(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeOne' => 'test']);
+        $cache->set(self::CHECKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeOne' => 'test']);
 
         new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
     }
@@ -73,7 +73,7 @@ class EtcdProviderTest extends BaseTest
         $cache = new SimpleCacheBridge(new ArrayCachePool());
 
         new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
-        $this->assertArrayHasKey('nodeOne', $cache->get(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR));
+        $this->assertArrayHasKey('nodeOne', $cache->get(self::CHECKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR));
     }
 
 
@@ -126,7 +126,7 @@ class EtcdProviderTest extends BaseTest
         $this->createBaseFixture();
 
         $cache = new SimpleCacheBridge(new ArrayCachePool());
-        $cache->set(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeTwo' => 'Three']);
+        $cache->set(self::CHECKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR, ['nodeTwo' => 'Three']);
 
         $provider = new EtcdConfigProvider(new EtcdClientMockFactory($this), self::TEST_ETCD_ROOT_DIR, $cache);
         $this->assertEquals('Three', $provider->getValue('nodeTwo'));
@@ -144,8 +144,7 @@ class EtcdProviderTest extends BaseTest
 
         $provider = new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR);
         $provider->setValue('nodeTwo', 'Three');
-        // FIXME !!!
-        $this->assertEquals(['Two', 'Three'], $provider->getValue('nodeTwo'));
+        $this->assertEquals('Three', $provider->getValue('nodeTwo'));
 
         $provider = new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR);
         $this->assertEquals('Three', $provider->getValue('nodeTwo'));
@@ -165,8 +164,7 @@ class EtcdProviderTest extends BaseTest
 
         $provider = new EtcdConfigProvider($clientFactory, self::TEST_ETCD_ROOT_DIR, $cache);
         $provider->setValue('nodeTwo', 'Three');
-        // FIXME !!!
-        $this->assertEquals(['Two', 'Three'], $cache->get(self::CHEKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR)['nodeTwo']);
+        $this->assertEquals('Three', $cache->get(self::CHECKED_CACHE_NS . self::TEST_ETCD_ROOT_DIR)['nodeTwo']);
     }
 
 

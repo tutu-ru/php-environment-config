@@ -5,6 +5,7 @@ namespace TutuRu\EnvironmentConfig;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
+use TutuRu\Config\ConfigDataStorageTrait;
 use TutuRu\Config\ConfigInterface;
 use TutuRu\EnvironmentConfig\Exceptions\EnvConfigLoadingException;
 use TutuRu\Etcd\EtcdClient;

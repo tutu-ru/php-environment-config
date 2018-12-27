@@ -9,9 +9,6 @@ use TutuRu\EnvironmentConfig\Exceptions\EnvConfigUpdateForbiddenException;
 
 class EnvironmentConfig implements EnvironmentConfigInterface
 {
-    /** @var string */
-    private $applicationName;
-
     /** @var EnvironmentProviderFactoryInterface */
     private $providerFactory;
 
@@ -25,9 +22,8 @@ class EnvironmentConfig implements EnvironmentConfigInterface
     private $infrastructureProvider;
 
 
-    public function __construct(string $applicationName, EnvironmentProviderFactoryInterface $providerFactory)
+    public function __construct(EnvironmentProviderFactoryInterface $providerFactory)
     {
-        $this->applicationName = $applicationName;
         $this->providerFactory = $providerFactory;
     }
 

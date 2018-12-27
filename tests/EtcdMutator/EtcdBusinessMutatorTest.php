@@ -11,7 +11,7 @@ class EtcdBusinessMutatorTest extends EtcdMutatorTest
 {
     protected function getMutator()
     {
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         return $config->getBusinessMutator();
     }
 

@@ -13,7 +13,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->expectException(EnvConfigLoadingException::class);
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
     }
 
@@ -26,7 +26,7 @@ class EnvironmentConfigTest extends BaseTest
         $client->makeDir('/' . self::TEST_ETCD_ROOT_DIR . '/test/service');
         $client->makeDir('/' . self::TEST_ETCD_ROOT_DIR . '/infrastructure');
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
     }
 
@@ -47,7 +47,7 @@ class EnvironmentConfigTest extends BaseTest
                 ->method('getDirectoryNodesAsArray');
         }
 
-        $config = new EnvironmentConfig("test", $providerFactory);
+        $config = new EnvironmentConfig($providerFactory);
         $config->load();
     }
 
@@ -68,7 +68,7 @@ class EnvironmentConfigTest extends BaseTest
                 ->method('getDirectoryNodesAsArray');
         }
 
-        $config = new EnvironmentConfig("test", $providerFactory);
+        $config = new EnvironmentConfig($providerFactory);
         $config->load();
 
         $config->load();
@@ -161,7 +161,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $this->assertEquals($value, $config->getValue($configId));
@@ -175,7 +175,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $client = $this->createEtcdClient();
@@ -194,7 +194,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $client = $this->createEtcdClient();
@@ -215,7 +215,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $client = $this->createEtcdClient();
@@ -240,7 +240,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $config->updateBusinessValue('nodeOne', 'updated');
@@ -252,7 +252,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $config->updateBusinessValue('nodeOne', 'updated');
@@ -265,7 +265,7 @@ class EnvironmentConfigTest extends BaseTest
     {
         $this->createBaseFixture();
 
-        $config = new EnvironmentConfig("test", new TestEnvironmentProviderFactory('test', $this));
+        $config = new EnvironmentConfig(new TestEnvironmentProviderFactory('test', $this));
         $config->load();
 
         $this->expectException(ConfigUpdateForbiddenExceptionInterface::class);

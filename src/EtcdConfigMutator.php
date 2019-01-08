@@ -56,7 +56,9 @@ class EtcdConfigMutator extends EtcdConfig implements MutatorInterface
             throw new EnvConfigNodeNotExistException($path, 0, $e);
         }
         if (is_array($result) && 1 === count($result)) {
-            if ('' === key($result) || trim($path, EtcdClient::PATH_SEPARATOR) === key($result)) {
+            $parts = explode(EtcdClient::PATH_SEPARATOR, trim($path, EtcdClient::PATH_SEPARATOR));
+            $requestedNode = $parts[count($parts) - 1];
+            if ('' === key($result) || $requestedNode === key($result)) {
                 $result = current($result);
             }
         }

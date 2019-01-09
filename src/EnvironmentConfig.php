@@ -43,14 +43,15 @@ class EnvironmentConfig implements EnvironmentConfigInterface
 
     public function getValue(string $configId)
     {
+        $value = null;
         /** @var StorageProviderInterface $provider */
-        foreach ([$this->serviceProvider, $this->businessProvider, $this->infrastructureProvider] as $provider) {
-            $value = $provider->getValue($configId);
-            if (!is_null($value)) {
-                return $value;
+        foreach ([$this->infrastructureProvider, $this->businessProvider, $this->serviceProvider] as $provider) {
+            $result = $provider->getValue($configId);
+            if (!is_null($result)) {
+                $value = is_array($value) ? $this->mergeConfig($value, (array)$result) : $result;
             }
         }
-        return null;
+        return $value;
     }
 
 
@@ -90,5 +91,32 @@ class EnvironmentConfig implements EnvironmentConfigInterface
     public function getServiceMutator(): ?MutatorInterface
     {
         return $this->providerFactory->createServiceMutator();
+    }
+
+
+    /**
+     * Merge two arrays recursive. If first and second array have the same key second overwrite first.
+     *
+     * @param  array $array1
+     * @param  array $array2
+     * @return  array
+     */
+    private function mergeConfig(array $array1, array $array2)
+    {
+        $merged = $array1;
+        if (is_array($array2)) {
+            foreach ($array2 as $key => $val) {
+                if (is_array($array2[$key])) {
+                    if (isset($merged[$key]) && is_array($merged[$key])) {
+                        $merged[$key] = $this->mergeConfig($merged[$key], $array2[$key]);
+                    } else {
+                        $merged[$key] = $array2[$key];
+                    }
+                } else {
+                    $merged[$key] = $val;
+                }
+            }
+        }
+        return $merged;
     }
 }

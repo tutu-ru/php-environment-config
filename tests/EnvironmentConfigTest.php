@@ -85,14 +85,17 @@ class EnvironmentConfigTest extends BaseTest
 
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/service/nodeOne', 'A');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/service/nodeTwo', 'AA');
+        $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/service/nodeSquash/A', 'One');
 
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/business/nodeOne', 'B');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/business/nodeTwo', 'BB');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/business/nodeThree', 'BBB');
+        $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/business/nodeSquash/B', 'Two');
 
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/infrastructure/nodeOne', 'C');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/infrastructure/nodeThree', 'CCC');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/infrastructure/nodeFour', 'DDDD');
+        $client->setValue(self::TEST_ETCD_ROOT_DIR . '/infrastructure/nodeSquash/C', 'Three');
 
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/service/Array/0', 'A');
         $client->setValue(self::TEST_ETCD_ROOT_DIR . '/test/business/Array/1', 'B');
@@ -133,10 +136,17 @@ class EnvironmentConfigTest extends BaseTest
             ],
             [
                 'configId'            => 'Array',
-                'value'               => [0 => 'A'],
+                'value'               => [0 => 'A', 1 => 'B', 2 => 'C'],
                 'serviceValue'        => [0 => 'A'],
                 'businessValue'       => [1 => 'B'],
                 'infrastructureValue' => [2 => 'C'],
+            ],
+            [
+                'configId'            => 'nodeSquash',
+                'value'               => ['A' => 'One', 'B' => 'Two', 'C' => 'Three'],
+                'serviceValue'        => ['A' => 'One'],
+                'businessValue'       => ['B' => 'Two'],
+                'infrastructureValue' => ['C' => 'Three'],
             ],
             [
                 'configId'            => 'notExist',

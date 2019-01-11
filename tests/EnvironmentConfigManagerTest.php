@@ -214,7 +214,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     }
 
 
-    public function testBusinessServiceMutator()
+    public function testCreateBusinessMutator()
     {
         $configManager = new TestEnvironmentConfigManager('test', $this);
         $mutator = $configManager->createBusinessMutator();

@@ -9,7 +9,7 @@ use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
 class EtcdConfigMutator extends EtcdProvider
 {
-    public function init()
+    public function init(): void
     {
         if (!$this->dirExists(EtcdClient::PATH_SEPARATOR)) {
             $this->client->makeDir(EtcdClient::PATH_SEPARATOR);
@@ -17,7 +17,7 @@ class EtcdConfigMutator extends EtcdProvider
     }
 
 
-    public function copy(string $pathFrom, string $pathTo)
+    public function copy(string $pathFrom, string $pathTo): void
     {
         $listResult = $this->client->listDir($pathFrom, false);
         if (isset($listResult['node']['value'])) {
@@ -28,13 +28,13 @@ class EtcdConfigMutator extends EtcdProvider
     }
 
 
-    public function delete(string $path)
+    public function delete(string $path): void
     {
         $this->client->deleteDir($path, true);
     }
 
 
-    public function setValue(string $path, $value)
+    public function setValue(string $path, $value): void
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
@@ -63,7 +63,7 @@ class EtcdConfigMutator extends EtcdProvider
     }
 
 
-    private function dirExists($path)
+    private function dirExists($path): bool
     {
         try {
             return (bool)$this->client->listDir($path, false);

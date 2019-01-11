@@ -17,7 +17,7 @@ class EtcdConfig extends EtcdProvider implements ConfigInterface
 {
     use ConfigDataStorageTrait;
 
-    private const CACHE_NS = 'tutu_env_config_etc_';
+    private const CACHE_NS = 'tutu_env_config_etcd_';
 
     /** @var CacheInterface */
     private $cacheDriver;

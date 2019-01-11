@@ -12,7 +12,7 @@ use TutuRu\EnvironmentConfig\MutableEtcdConfig;
 
 class EtcdConfigTest extends BaseTest
 {
-    private const CHECKED_CACHE_NS = 'tutu_env_config_etc_';
+    private const CHECKED_CACHE_NS = 'tutu_env_config_etcd_';
 
 
     private function createBaseFixture()

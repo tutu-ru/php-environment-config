@@ -11,6 +11,9 @@ class EnvironmentConfigManager
 {
     public const CONFIG_ROOT_DIR = 'config-tutu';
 
+    public const CONFIG_TYPE_SERVICE = 'service';
+    public const CONFIG_TYPE_BUSINESS = 'business';
+
     /** @var string */
     private $applicationName;
 
@@ -101,7 +104,7 @@ class EnvironmentConfigManager
     private function createServiceConfig(): EtcdConfig
     {
         return new EtcdConfig(
-            $this->getAppPath('service'),
+            $this->getAppPath(self::CONFIG_TYPE_SERVICE),
             $this->cacheDriver,
             $this->cacheTtl,
             $this->etcdClientFactory
@@ -112,7 +115,7 @@ class EnvironmentConfigManager
     private function createBusinessConfig(): MutableEtcdConfig
     {
         return new MutableEtcdConfig(
-            $this->getAppPath('business'),
+            $this->getAppPath(self::CONFIG_TYPE_BUSINESS),
             $this->cacheDriver,
             $this->cacheTtl,
             $this->etcdClientFactory
@@ -133,12 +136,12 @@ class EnvironmentConfigManager
 
     public function createServiceMutator(): EtcdConfigMutator
     {
-        return new EtcdConfigMutator($this->getAppPath('service'), $this->etcdClientFactory);
+        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_SERVICE), $this->etcdClientFactory);
     }
 
 
     public function createBusinessMutator(): EtcdConfigMutator
     {
-        return new EtcdConfigMutator($this->getAppPath('business'), $this->etcdClientFactory);
+        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_BUSINESS), $this->etcdClientFactory);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace TutuRu\EnvironmentConfig\Exceptions;
+namespace TutuRu\EnvironmentConfig\Exception;
 
-use TutuRu\Config\Exceptions\ConfigPathNotExistExceptionInterface;
+use TutuRu\Config\Exception\ConfigPathNotExistExceptionInterface;
 
 class EnvConfigNodeNotExistException extends EnvConfigException implements ConfigPathNotExistExceptionInterface
 {

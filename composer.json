@@ -6,7 +6,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "tutu-ru/lib-config": "^1.0",
+    "tutu-ru/lib-config": "dev-simple-interface as 1.99",
     "tutu-ru/lib-etcd": "^1.0",
     "psr/simple-cache": "^1.0",
     "php": "^7.1"

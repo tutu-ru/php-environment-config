@@ -3,16 +3,26 @@ declare(strict_types=1);
 
 namespace TutuRu\Tests\EnvironmentConfig;
 
-use TutuRu\Config\Exceptions\ConfigPathNotExistExceptionInterface;
+use TutuRu\Config\Exception\ConfigPathNotExistExceptionInterface;
+use TutuRu\EnvironmentConfig\EtcdConfigMutator;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 use TutuRu\Etcd\Exceptions\NotAFileException;
 
-abstract class EtcdMutatorTest extends BaseTest
+class EtcdConfigMutatorTest extends BaseTest
 {
-    abstract protected function getMutator();
+    private function getMutator()
+    {
+        return new EtcdConfigMutator(
+            '/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service',
+            new EtcdClientMockFactory($this)
+        );
+    }
 
 
-    abstract protected function getMutatedDir();
+    private function getMutatedDir()
+    {
+        return TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service/';
+    }
 
 
     public function testInit()

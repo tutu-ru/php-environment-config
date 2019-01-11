@@ -5,9 +5,9 @@ namespace TutuRu\Tests\EnvironmentConfig;
 
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
-use TutuRu\EnvironmentConfig\EtcdEnvironmentProviderFactory;
+use TutuRu\EnvironmentConfig\EnvironmentConfigManager;
 
-class TestEnvironmentProviderFactory extends EtcdEnvironmentProviderFactory
+class TestEnvironmentConfigManager extends EnvironmentConfigManager
 {
     public const CONFIG_ROOT_DIR = 'config-test';
 

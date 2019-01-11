@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace TutuRu\EnvironmentConfig;
 
-use TutuRu\Config\MutatorInterface;
-use TutuRu\EnvironmentConfig\Exceptions\EnvConfigNodeNotExistException;
+use TutuRu\EnvironmentConfig\Exception\EnvConfigNodeNotExistException;
 use TutuRu\Etcd\EtcdClient;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
-class EtcdConfigMutator extends EtcdConfig implements MutatorInterface
+class EtcdConfigMutator extends EtcdProvider
 {
     public function init()
     {

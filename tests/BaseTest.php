@@ -9,9 +9,6 @@ use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
 abstract class BaseTest extends TestCase
 {
-    public const TEST_ETCD_ROOT_DIR = 'config-test';
-
-
     public function setUp()
     {
         parent::setUp();
@@ -35,7 +32,7 @@ abstract class BaseTest extends TestCase
     protected function cleanUp()
     {
         try {
-            $this->createEtcdClient()->deleteDir('/config-test', true);
+            $this->createEtcdClient()->deleteDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR, true);
         } catch (KeyNotFoundException $e) {
         }
     }

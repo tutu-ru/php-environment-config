@@ -111,6 +111,15 @@ class EtcdConfigMutatorTest extends BaseTest
     }
 
 
+    public function testGetSubValue()
+    {
+        $client = $this->createEtcdClient();
+        $client->setValue($this->getMutatedDir() . 'levelOne/levelTwo', 'value');
+        $mutator = $this->getMutator();
+        $this->assertEquals('value', $mutator->getValue('levelOne/levelTwo'));
+    }
+
+
     public function testGetValueNotExist()
     {
         $this->expectException(ConfigPathNotExistExceptionInterface::class);

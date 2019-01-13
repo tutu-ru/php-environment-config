@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace TutuRu\Tests\EnvironmentConfig;
 
 use TutuRu\Config\Exception\InvalidConfigExceptionInterface;
-use TutuRu\EnvironmentConfig\EtcdConfig;
-use TutuRu\EnvironmentConfig\EtcdConfigMutator;
-use TutuRu\EnvironmentConfig\MutableEtcdConfig;
+use TutuRu\EtcdConfig\EtcdConfig;
+use TutuRu\EtcdConfig\EtcdConfigMutator;
+use TutuRu\EtcdConfig\MutableEtcdConfig;
 
 class EnvironmentConfigManagerTest extends BaseTest
 {
     public function getInfrastructurePath()
     {
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $this->assertEquals(
             '/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/infrastructure',
             $configManager->getInfrastructurePath()
@@ -22,7 +22,7 @@ class EnvironmentConfigManagerTest extends BaseTest
 
     public function getAppPath()
     {
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $this->assertEquals(
             '/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service',
             $configManager->getAppPath('service')
@@ -32,7 +32,7 @@ class EnvironmentConfigManagerTest extends BaseTest
 
     public function getAppPathWithoutType()
     {
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $this->assertEquals(
             '/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test',
             $configManager->getAppPath()
@@ -44,7 +44,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     {
         $this->expectException(InvalidConfigExceptionInterface::class);
 
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
     }
 
@@ -57,46 +57,7 @@ class EnvironmentConfigManagerTest extends BaseTest
         $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service');
         $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/infrastructure');
 
-        $configManager = new TestEnvironmentConfigManager('test', $this);
-        $configManager->load();
-    }
-
-
-    public function testLoad()
-    {
-        $client = $this->createEtcdClient();
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service');
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/business');
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/infrastructure');
-
-        $configManager = new TestEnvironmentConfigManager('test', $this);
-        foreach (['test/service', 'test/business', 'infrastructure'] as $type) {
-            $configManager->getEtcdClientFactory()
-                ->createFromEnv(TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/' . $type)
-                ->expects($this->exactly(1))
-                ->method('getDirectoryNodesAsArray');
-        }
-
-        $configManager->load();
-    }
-
-
-    public function testReload()
-    {
-        $client = $this->createEtcdClient();
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/service');
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/test/business');
-        $client->makeDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/infrastructure');
-
-        $configManager = new TestEnvironmentConfigManager('test', $this);
-        foreach (['test/service', 'test/business', 'infrastructure'] as $type) {
-            $configManager->getEtcdClientFactory()
-                ->createFromEnv(TestEnvironmentConfigManager::CONFIG_ROOT_DIR . '/' . $type)
-                ->expects($this->exactly(2))
-                ->method('getDirectoryNodesAsArray');
-        }
-
-        $configManager->load();
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
     }
 
@@ -104,7 +65,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetServiceConfigBeforeFirstLoad()
     {
         $this->expectException(InvalidConfigExceptionInterface::class);
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->getServiceConfig();
     }
 
@@ -112,7 +73,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetBusinessConfigBeforeFirstLoad()
     {
         $this->expectException(InvalidConfigExceptionInterface::class);
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->getBusinessConfig();
     }
 
@@ -120,7 +81,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetInfrastructureConfigBeforeFirstLoad()
     {
         $this->expectException(InvalidConfigExceptionInterface::class);
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->getInfrastructureConfig();
     }
 
@@ -128,7 +89,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetServiceConfig()
     {
         $this->createBaseFixture();
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
         $this->assertInstanceOf(EtcdConfig::class, $configManager->getServiceConfig());
     }
@@ -137,7 +98,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetBusinessConfig()
     {
         $this->createBaseFixture();
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
         $this->assertInstanceOf(MutableEtcdConfig::class, $configManager->getBusinessConfig());
     }
@@ -146,7 +107,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testGetInfrastructureConfig()
     {
         $this->createBaseFixture();
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
         $this->assertInstanceOf(EtcdConfig::class, $configManager->getInfrastructureConfig());
     }
@@ -155,7 +116,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testUpdateConfigsOnReload()
     {
         $this->createBaseFixture();
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
 
         $service = $configManager->getServiceConfig();
@@ -185,7 +146,7 @@ class EnvironmentConfigManagerTest extends BaseTest
     public function testFailOnReload($path)
     {
         $this->createBaseFixture();
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $configManager->load();
 
         $service = $configManager->getServiceConfig();
@@ -207,7 +168,7 @@ class EnvironmentConfigManagerTest extends BaseTest
 
     public function testCreateServiceMutator()
     {
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $mutator = $configManager->createServiceMutator();
         $this->assertInstanceOf(EtcdConfigMutator::class, $mutator);
         $this->assertNotSame($mutator, $configManager->createServiceMutator());
@@ -216,7 +177,7 @@ class EnvironmentConfigManagerTest extends BaseTest
 
     public function testCreateBusinessMutator()
     {
-        $configManager = new TestEnvironmentConfigManager('test', $this);
+        $configManager = new TestEnvironmentConfigManager('test');
         $mutator = $configManager->createBusinessMutator();
         $this->assertInstanceOf(EtcdConfigMutator::class, $mutator);
         $this->assertNotSame($mutator, $configManager->createBusinessMutator());

@@ -5,6 +5,6 @@ namespace TutuRu\EnvironmentConfig\Exception;
 
 use TutuRu\Config\Exception\InvalidConfigExceptionInterface;
 
-class EnvConfigLoadingException extends EnvConfigException implements InvalidConfigExceptionInterface
+class EnvConfigLoadingException extends \Exception implements InvalidConfigExceptionInterface
 {
 }

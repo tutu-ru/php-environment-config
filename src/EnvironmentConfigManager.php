@@ -5,7 +5,9 @@ namespace TutuRu\EnvironmentConfig;
 
 use Psr\SimpleCache\CacheInterface;
 use TutuRu\EnvironmentConfig\Exception\EnvConfigLoadingException;
-use TutuRu\Etcd\EtcdClientFactory;
+use TutuRu\EtcdConfig\EtcdConfig;
+use TutuRu\EtcdConfig\EtcdConfigMutator;
+use TutuRu\EtcdConfig\MutableEtcdConfig;
 
 class EnvironmentConfigManager
 {
@@ -13,12 +15,10 @@ class EnvironmentConfigManager
 
     public const CONFIG_TYPE_SERVICE = 'service';
     public const CONFIG_TYPE_BUSINESS = 'business';
+    public const CONFIG_TYPE_INFRASTRUCTURE = 'infrastructure';
 
     /** @var string */
     private $applicationName;
-
-    /** @var EtcdClientFactory */
-    private $etcdClientFactory;
 
     /** @var CacheInterface|null */
     private $cacheDriver;
@@ -36,16 +36,11 @@ class EnvironmentConfigManager
     private $infrastructureConfig;
 
 
-    public function __construct(
-        string $applicationName,
-        ?CacheInterface $cacheDriver = null,
-        ?int $cacheTtl = null,
-        ?EtcdClientFactory $etcdClientFactory = null
-    ) {
+    public function __construct(string $applicationName, ?CacheInterface $cacheDriver = null, ?int $cacheTtl = null)
+    {
         $this->applicationName = $applicationName;
         $this->cacheDriver = $cacheDriver;
         $this->cacheTtl = $cacheTtl;
-        $this->etcdClientFactory = $etcdClientFactory ?? new EtcdClientFactory();
     }
 
 
@@ -106,8 +101,7 @@ class EnvironmentConfigManager
         return new EtcdConfig(
             $this->getAppPath(self::CONFIG_TYPE_SERVICE),
             $this->cacheDriver,
-            $this->cacheTtl,
-            $this->etcdClientFactory
+            $this->cacheTtl
         );
     }
 
@@ -117,8 +111,7 @@ class EnvironmentConfigManager
         return new MutableEtcdConfig(
             $this->getAppPath(self::CONFIG_TYPE_BUSINESS),
             $this->cacheDriver,
-            $this->cacheTtl,
-            $this->etcdClientFactory
+            $this->cacheTtl
         );
     }
 
@@ -128,20 +121,19 @@ class EnvironmentConfigManager
         return new EtcdConfig(
             $this->getInfrastructurePath(),
             $this->cacheDriver,
-            $this->cacheTtl,
-            $this->etcdClientFactory
+            $this->cacheTtl
         );
     }
 
 
     public function createServiceMutator(): EtcdConfigMutator
     {
-        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_SERVICE), $this->etcdClientFactory);
+        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_SERVICE));
     }
 
 
     public function createBusinessMutator(): EtcdConfigMutator
     {
-        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_BUSINESS), $this->etcdClientFactory);
+        return new EtcdConfigMutator($this->getAppPath(self::CONFIG_TYPE_BUSINESS));
     }
 }

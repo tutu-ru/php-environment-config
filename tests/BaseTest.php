@@ -5,6 +5,7 @@ namespace TutuRu\Tests\EnvironmentConfig;
 
 use PHPUnit\Framework\TestCase;
 use TutuRu\Etcd\EtcdClient;
+use TutuRu\Etcd\EtcdClientFactory;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
 abstract class BaseTest extends TestCase
@@ -12,6 +13,8 @@ abstract class BaseTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+        putenv("ETCD_HOST=localhost");
+        putenv("ETCD_PORT=2379");
         $this->cleanUp();
     }
 
@@ -25,7 +28,7 @@ abstract class BaseTest extends TestCase
 
     protected function createEtcdClient(): EtcdClient
     {
-        return (new EtcdClientMockFactory($this))->createFromEnv();
+        return (new EtcdClientFactory())->createFromEnv();
     }
 
 

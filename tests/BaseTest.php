@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TutuRu\Tests\EnvironmentConfig;
 
 use PHPUnit\Framework\TestCase;
+use TutuRu\EnvironmentConfig\EtcdConfigFactory;
 use TutuRu\Etcd\EtcdClient;
 use TutuRu\Etcd\EtcdClientFactory;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
@@ -35,7 +36,7 @@ abstract class BaseTest extends TestCase
     protected function cleanUp()
     {
         try {
-            $this->createEtcdClient()->deleteDir('/' . TestEnvironmentConfigManager::CONFIG_ROOT_DIR, true);
+            $this->createEtcdClient()->deleteDir('/' . EtcdConfigFactory::CONFIG_ROOT_DIR, true);
         } catch (KeyNotFoundException $e) {
         }
     }

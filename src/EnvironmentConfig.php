@@ -3,92 +3,91 @@ declare(strict_types=1);
 
 namespace TutuRu\EnvironmentConfig;
 
-use TutuRu\Config\EnvironmentConfigInterface;
-use TutuRu\Config\MutatorInterface;
-use TutuRu\EnvironmentConfig\Exceptions\EnvConfigUpdateForbiddenException;
+use Psr\SimpleCache\CacheInterface;
+use TutuRu\Config\ConfigInterface;
+use TutuRu\EnvironmentConfig\Exception\EnvironmentConfigLoadingException;
+use TutuRu\EnvironmentConfig\Exception\EnvironmentConfigNotFoundException;
+use TutuRu\EtcdConfig\EtcdConfig;
+use TutuRu\EtcdConfig\MutableEtcdConfig;
 
-class EnvironmentConfig implements EnvironmentConfigInterface
+class EnvironmentConfig implements ConfigInterface
 {
-    /** @var EnvironmentProviderFactoryInterface */
-    private $providerFactory;
+    /** @var EtcdConfigFactory */
+    private $etcdConfigFactory;
 
-    /** @var StorageProviderInterface */
-    private $serviceProvider;
+    /** @var EtcdConfig */
+    private $serviceConfig;
 
-    /** @var StorageProviderInterface */
-    private $businessProvider;
+    /** @var MutableEtcdConfig */
+    private $businessConfig;
 
-    /** @var StorageProviderInterface */
-    private $infrastructureProvider;
+    /** @var EtcdConfig */
+    private $infrastructureConfig;
 
 
-    public function __construct(EnvironmentProviderFactoryInterface $providerFactory)
+    public function __construct(string $applicationName, ?CacheInterface $cacheDriver = null, ?int $cacheTtl = null)
     {
-        $this->providerFactory = $providerFactory;
+        $this->etcdConfigFactory = new EtcdConfigFactory($applicationName, $cacheDriver, $cacheTtl);
     }
 
 
     public function load()
     {
-        $serviceProvider = $this->providerFactory->createServiceProvider();
-        $businessProvider = $this->providerFactory->createBusinessProvider();
-        $infrastructureProvider = $this->providerFactory->createInfrastructureProvider();
+        $serviceProvider = $this->etcdConfigFactory->createServiceConfig();
+        $businessProvider = $this->etcdConfigFactory->createBusinessConfig();
+        $infrastructureProvider = $this->etcdConfigFactory->createInfrastructureConfig();
 
         // if all providers was created we can add it (or replace existing)
-        $this->serviceProvider = $serviceProvider;
-        $this->businessProvider = $businessProvider;
-        $this->infrastructureProvider = $infrastructureProvider;
+        $this->serviceConfig = $serviceProvider;
+        $this->businessConfig = $businessProvider;
+        $this->infrastructureConfig = $infrastructureProvider;
     }
 
 
-    public function getValue(string $configId)
+    public function getValue(string $path, bool $required = false, $defaultValue = null)
     {
-        /** @var StorageProviderInterface $provider */
-        foreach ([$this->serviceProvider, $this->businessProvider, $this->infrastructureProvider] as $provider) {
-            $value = $provider->getValue($configId);
+        $value = null;
+        $prioritizedList = [
+            $this->getBusinessConfig(),
+            $this->getServiceConfig(),
+            $this->getInfrastructureConfig()
+        ];
+        foreach ($prioritizedList as $config) {
+            $value = $config->getValue($path);
             if (!is_null($value)) {
-                return $value;
+                break;
             }
         }
-        return null;
-    }
-
-
-    public function getBusinessValue(string $configId)
-    {
-        return $this->businessProvider->getValue($configId);
-    }
-
-
-    public function updateBusinessValue(string $configId, $value)
-    {
-        if (is_null($this->businessProvider->getValue($configId))) {
-            throw new EnvConfigUpdateForbiddenException("Update for not existing node ({$configId}) is forbidden");
+        if ($required && is_null($value)) {
+            throw new EnvironmentConfigNotFoundException($path);
         }
-        $this->businessProvider->setValue($configId, $value);
+        return $value ?? $defaultValue;
     }
 
 
-    public function getServiceValue(string $configId)
+    public function getBusinessConfig(): MutableEtcdConfig
     {
-        return $this->serviceProvider->getValue($configId);
+        if (is_null($this->businessConfig)) {
+            throw new EnvironmentConfigLoadingException("Config not loaded");
+        }
+        return $this->businessConfig;
     }
 
 
-    public function getInfrastructureValue(string $configId)
+    public function getServiceConfig(): EtcdConfig
     {
-        return $this->infrastructureProvider->getValue($configId);
+        if (is_null($this->serviceConfig)) {
+            throw new EnvironmentConfigLoadingException("Config not loaded");
+        }
+        return $this->serviceConfig;
     }
 
 
-    public function getBusinessMutator(): ?MutatorInterface
+    public function getInfrastructureConfig(): EtcdConfig
     {
-        return $this->providerFactory->createBusinessMutator();
-    }
-
-
-    public function getServiceMutator(): ?MutatorInterface
-    {
-        return $this->providerFactory->createServiceMutator();
+        if (is_null($this->infrastructureConfig)) {
+            throw new EnvironmentConfigLoadingException("Config not loaded");
+        }
+        return $this->infrastructureConfig;
     }
 }

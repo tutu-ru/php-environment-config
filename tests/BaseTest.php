@@ -4,17 +4,18 @@ declare(strict_types=1);
 namespace TutuRu\Tests\EnvironmentConfig;
 
 use PHPUnit\Framework\TestCase;
+use TutuRu\EnvironmentConfig\EtcdConfigFactory;
 use TutuRu\Etcd\EtcdClient;
+use TutuRu\Etcd\EtcdClientFactory;
 use TutuRu\Etcd\Exceptions\KeyNotFoundException;
 
 abstract class BaseTest extends TestCase
 {
-    public const TEST_ETCD_ROOT_DIR = 'config-test';
-
-
     public function setUp()
     {
         parent::setUp();
+        putenv("ETCD_HOST=localhost");
+        putenv("ETCD_PORT=2379");
         $this->cleanUp();
     }
 
@@ -28,14 +29,14 @@ abstract class BaseTest extends TestCase
 
     protected function createEtcdClient(): EtcdClient
     {
-        return (new EtcdClientMockFactory($this))->createFromEnv();
+        return (new EtcdClientFactory())->createFromEnv();
     }
 
 
     protected function cleanUp()
     {
         try {
-            $this->createEtcdClient()->deleteDir('/config-test', true);
+            $this->createEtcdClient()->deleteDir('/' . EtcdConfigFactory::CONFIG_ROOT_DIR, true);
         } catch (KeyNotFoundException $e) {
         }
     }
